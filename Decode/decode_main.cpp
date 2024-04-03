@@ -12,27 +12,15 @@ int main(int argc, char * argv[]) {
   std::cin.tie(0); 
   std::cout.tie(0); 
 
-  timetype t_begin = 1, t_interval = 1;
-  datatype e_delta; //error band
   std::string filename;
-  int decimal_digits;
 
-  std::cin >> filename >> e_delta >> decimal_digits ;
-  for(int i = 0; i < decimal_digits; i ++) P = P * 10;
+  std::cin >> filename;
 
-  SdtDoor<timetype, datatype> data(t_begin, t_interval, e_delta);
-  std::ifstream in(filename);
-  
-  Form<timetype> tim;
-  Form<datatype> val;
-  data.Init_(in, &tim, &val); 
+  std::ifstream in(filename, std::ios::binary);
+
+  DecodeForm<datatype> data;
+  data.Init_(in);
   in.close();
-  /*
-  for(auto &u : tim.Src_) std::cout << u << " ";std::cout << std::endl;
-  for(auto &u : val.Src_) std::cout << u << " ";std::cout << std::endl;
-  */
-  Encode(&tim, true);
-  //std::cout << "!!!!!!!" << std::endl;
-  Encode(&val, false);
+  Decode(data);
   return 0;
 }

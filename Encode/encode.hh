@@ -35,13 +35,7 @@ void Encode(EncodeForm<T> *data, bool IncreaseFlag) {
   if(IncreaseFlag) {
     DeltaEncode(data->Src_, data->Delta_);
   } else {
-    //DeltaEncode(data->Src_, data->Delta_);
     DeltaOfDeltaEncode(data->Src_, data->Delta_);
-    /*
-     for(auto u : data->Src_) std::cout << u << " "; std::cout << std::endl;
-     for(auto u : data->Delta_) std::cout << u << " "; std::cout << std::endl;
-      for(auto u : data->Delta_) std::cout << u << " "; std::cout << std::endl;
-    */
     ZigZagEncode(data->Delta_);
     data->ZigZagFlag = true;
   }
@@ -50,27 +44,11 @@ void Encode(EncodeForm<T> *data, bool IncreaseFlag) {
 
  // VectorClear(data->Delta_);
 
-  /*
-  for(auto u : data->RleArrayNum_) std::cout << u << " "; std::cout << std::endl;
-  for(auto u : data->RleArrayVal_) std::cout << u << " " ;std::cout << std::endl;
-  */
-
   auto ApartCompress = [&data]()->void{
     Simple8bEncode(data->RleArrayNum_, data->RetNum_);
     Simple8bEncode(data->RleArrayVal_, data->RetVal_);
-    std::vector<bool> ver = data->RetNum_;
-    /*
-    for(auto u : ver) std::cout << u;
-    std::cout << std::endl;
-    */
-    for(auto u : data->RetVal_) ver.push_back(u);
-    std::ofstream ou("code.out", std::ios::binary);
-    Print(ver, ou);
   };
   ApartCompress();
-  //VectorClear(data->RleArrayNum_);
-
-  //VectorClear(data->RleArrayVal_); 
 }
 
 #endif // ENCODE

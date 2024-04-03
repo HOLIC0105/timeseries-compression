@@ -19,7 +19,7 @@ constexpr int8_t SelectorNums[14] = {60, 30, 20, 15, 12, 10, 8, 7, 6, 5, 4, 3, 2
 constexpr int8_t SelectorBits[14] = {1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 15, 20, 30, 60};
 
 template <typename T>
-void ReSimple8bDecode(std::vector<bool> &src, std::vector<T> &dst, size_t l, size_t r) {
+void Simple8bDecode(std::vector<bool> &src, std::vector<T> &dst, size_t l, size_t r) {
   while(l < r) {
     int SelectorId =  (src[l] << 3) | (src[l + 1] << 2) | (src[l + 2] << 1) | src[l + 3];
     l += 4;
