@@ -4,7 +4,7 @@
 #include <stddef.h>
 #include <vector>
 template <typename T>
-void RunLengthEncode(std::vector<T> &Data, std::vector<int> &Nums, std::vector<T> &Val) {
+void RunLengthEncode(std::vector<T> &Data, std::vector<uint32_t> &Nums, std::vector<T> &Val) {
   Nums.push_back(0);
   Val.push_back(Data.front());
   for(auto &u: Data) {

@@ -16,46 +16,15 @@ static void VectorClear(std::vector<T> &v) {
 }
 
 template <typename T>
-void Decode(DecodeForm<T> *data) {
+void Decode(DecodeForm<T> &data, bool IncreaseFlag) {
+  RunLengthDecode(data.Delta_, data.RleArrayNum_, data.RleArrayVal_);
+
   if(IncreaseFlag) {
-    DeltaEncode(data->Src_, data->Delta_);
+    DeltaDecode(data.Delta_);
   } else {
-    //DeltaEncode(data->Src_, data->Delta_);
-    DeltaOfDeltaEncode(data->Src_, data->Delta_);
-    /*
-     for(auto u : data->Src_) std::cout << u << " "; std::cout << std::endl;
-     for(auto u : data->Delta_) std::cout << u << " "; std::cout << std::endl;
-      for(auto u : data->Delta_) std::cout << u << " "; std::cout << std::endl;
-    */
-    ZigZagEncode(data->Delta_);
-    data->ZigZagFlag = true;
+    ZigZagDecode(data.Delta_);
+    DeltaOfDeltaDecode(data.Delta_);
   }
-  //VectorClear(data->Src_);
-  RunLengthEncode(data->Delta_, data->RleArrayNum_, data->RleArrayVal_);
-
- // VectorClear(data->Delta_);
-
-  /*
-  for(auto u : data->RleArrayNum_) std::cout << u << " "; std::cout << std::endl;
-  for(auto u : data->RleArrayVal_) std::cout << u << " " ;std::cout << std::endl;
-  */
-
-  auto ApartCompress = [&data]()->void{
-    int l, r; //need find ....
-
-
-
-
-    Simple8bDecode(data->Src_, data->RleArrayNum_, l, r);
-    Simple8bDecode(data->Src_, data->RleArrayVal_, l, r);
-    
-    std::ofstream ou("code.out", std::ios::binary);
-    Print(ver, ou);
-  };
-  ApartCompress();
-  //VectorClear(data->RleArrayNum_);
-
-  //VectorClear(data->RleArrayVal_); 
 }
 
 #endif // DECODE

@@ -4,51 +4,17 @@
 #include "decode_form.hh"
 #include <fstream>
 
-#define MAX_DOUBLE 1.79769e+308
 template<typename T, typename D>
-struct Point{
-  T x;
-  D y;
-};
-template<typename T, typename D>
-class SdtDoor{
-  public:
-    SdtDoor(const T &tim, const T &t, const D &e) : 
-              t_begin_(tim), t_interval_(t), e_delta_(e){} 
-  void Init_(std::ifstream &in, Form<T> *x, Form<D> *y) {
-    T tim = t_begin_;
-    double val; 
-    double now_up, now_down, up_gate = -MAX_DOUBLE, down_gate = MAX_DOUBLE;
-    Point<T, D> last_data;
-    in >> val;
-    val *= 1000000;
-    x->Src_.push_back(tim);
-    y->Src_.push_back(val);
-    while(in >> val) {
-      val *= 1000000;
-      tim += t_interval_;
-      T x_delta = tim - x->Src_.back();
-      D y_delta = val - x->Src_.back();
-      now_up = double(y_delta - e_delta_) / x_delta;
-      up_gate = now_up > up_gate ? now_up : up_gate;
-      now_down = double(y_delta + e_delta_) / x_delta;
-      down_gate = now_down < down_gate ? now_down : down_gate;
-      if(up_gate > down_gate) {
-        x->Src_.push_back(last_data.x);
-        y->Src_.push_back(last_data.y);
-        x_delta = tim - x->Src_.back();
-        y_delta = val - x->Src_.back();
-        up_gate = double(y_delta - e_delta_) / x_delta;
-        down_gate = double(y_delta + e_delta_) / x_delta;
-      }
-      last_data = {tim, val};
+void SDTDecode(std::vector<T> &tim, std::vector<D> &val, std::ofstream &ou) {
+  for(int i = 0; i + 1 < tim.size(); i ++) {
+    D y_delta = val[i + 1] - val[i];
+    T x_delta = tim[i + 1] - tim[i];
+    double Y = 0;
+    for(T j = tim[i]; j < tim[i + 1]; j ++) {
+      ou << D(val[i] + Y / x_delta) << "\n";
+      Y += y_delta;
     }
-    x->Src_.push_back(last_data.x);
-    y->Src_.push_back(last_data.y);
   }
-  private:
-    const T t_interval_;
-    const T t_begin_;
-    const D e_delta_;
-};
+  ou << val.back() << "\n";
+}
 #endif //SDTDOOR

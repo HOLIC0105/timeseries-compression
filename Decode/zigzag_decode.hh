@@ -4,7 +4,7 @@
 #include <vector>
 #include <stdint.h>
 template <typename T>
-void ZigZagEncode(std::vector<T> &delta)
+void ZigZagDecode(std::vector<T> &delta)
 {
   for(auto &val : delta) {
     val = (val >> 1) ^ -(val & 1); 
