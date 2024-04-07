@@ -17,16 +17,17 @@ class SdtDoor{
               t_begin_(tim), t_interval_(t), e_delta_(e){} 
   void Init_(std::ifstream &in, EncodeForm<T> *x, EncodeForm<D> *y) {
     T tim = t_begin_;
-    D val; 
+    double val; 
     double now_up, now_down, up_gate = -MAX_DOUBLE, down_gate = MAX_DOUBLE;
     Point<T, D> last_data;
     in >> val;
     x->Src_.push_back(tim);
-    y->Src_.push_back(val);
+    y->Src_.push_back(val * 1000000);
     while(in >> val) {
+      val *= 1000000;
       tim += t_interval_;
       T x_delta = tim - x->Src_.back();
-      D y_delta = val - x->Src_.back();
+      D y_delta = val - y->Src_.back();
       now_up = double(y_delta - e_delta_) / x_delta;
       up_gate = now_up > up_gate ? now_up : up_gate;
       now_down = double(y_delta + e_delta_) / x_delta;

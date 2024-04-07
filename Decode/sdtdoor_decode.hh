@@ -11,10 +11,10 @@ void SDTDecode(std::vector<T> &tim, std::vector<D> &val, std::ofstream &ou) {
     T x_delta = tim[i + 1] - tim[i];
     double Y = 0;
     for(T j = tim[i]; j < tim[i + 1]; j ++) {
-      ou << D(val[i] + Y / x_delta) << "\n";
+      ou << 1.0 * D(val[i] + Y / x_delta) / 1000000 << "\n";
       Y += y_delta;
     }
   }
-  ou << val.back() << "\n";
+  ou << val.back() / 1000000 << "\n";
 }
 #endif //SDTDOOR

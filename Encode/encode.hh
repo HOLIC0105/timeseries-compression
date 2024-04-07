@@ -22,7 +22,6 @@ void Encode(EncodeForm<T> &data, bool IncreaseFlag) {
   } else {
     DeltaOfDeltaEncode(data.Src_, data.Delta_);
     ZigZagEncode(data.Delta_);
-    data.ZigZagFlag = true;
   }
   //VectorClear(data->Src_);
   RunLengthEncode(data.Delta_, data.RleArrayNum_, data.RleArrayVal_);

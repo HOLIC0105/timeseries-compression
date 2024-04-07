@@ -46,7 +46,7 @@ int main(int argc, char * argv[]) {
       src.push_back((s >> i) & 1);
     }
   }
-
+  
   in.close();
   
   std::vector<uint32_t> dst;
@@ -66,7 +66,7 @@ int main(int argc, char * argv[]) {
   while(num --) {
     tim.RleArrayVal_.push_back(dst[l ++]);
   }
-
+  num = 0;
   while(sum) {
     val.RleArrayNum_.push_back(dst[l]);
     sum -= dst[l];
@@ -75,9 +75,13 @@ int main(int argc, char * argv[]) {
   while(num --) {
     val.RleArrayVal_.push_back(dst[l ++]);
   }
-
   Decode(tim, true);
   Decode(val, false);
+
+  /*
+  for(auto u : tim.Delta_) std::cout << u << " "; std::cout << std::endl;
+  for(auto u : val.Delta_) std::cout << u << " "; std::cout << std::endl;
+  */
 
   std::ofstream ou(Filenameo);
 

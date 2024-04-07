@@ -30,6 +30,7 @@ int main(int argc, char * argv[]) {
         break;
       case 'e':
         e_delta = atoi(optarg);
+        break;
       case '?':
         printf("invalid option -- '%s'", optarg);
         exit(0);
@@ -43,10 +44,14 @@ int main(int argc, char * argv[]) {
   EncodeForm<datatype> val;
   data.Init_(in, &tim, &val); 
   in.close();
- 
+  /*
+  for(auto u : tim.Src_) std::cout << u << " "; std::cout << std::endl;
+  for(auto u : val.Src_) std::cout << u << " "; std::cout << std::endl;
+  */
   Encode(tim, true);
   Encode(val, false);
   
+
   std::ofstream ou(Filenameo, std::ios::binary);
 
   int num = tim.Src_.size();
