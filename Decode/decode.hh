@@ -18,10 +18,7 @@ static void VectorClear(std::vector<T> &v) {
 template <typename T>
 void Decode(DecodeForm<T> &data, bool IncreaseFlag) {
   RunLengthDecode(data.Delta_, data.RleArrayNum_, data.RleArrayVal_);
-  /*
-   for(auto u : data.RleArrayNum_) std::cout << u << ","; std::cout << std::endl;
-   for(auto u :data.RleArrayVal_) std::cout << u << ","; std::cout << std::endl;
-   */
+  
   if(IncreaseFlag) {
     DeltaDecode(data.Delta_);
   } else {

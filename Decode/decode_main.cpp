@@ -77,12 +77,7 @@ int main(int argc, char * argv[]) {
   }
   Decode(tim, true);
   Decode(val, false);
-
-  /*
-  for(auto u : tim.Delta_) std::cout << u << " "; std::cout << std::endl;
-  for(auto u : val.Delta_) std::cout << u << " "; std::cout << std::endl;
-  */
-
+  
   std::ofstream ou(Filenameo);
 
   SDTDecode(tim.Delta_, val.Delta_, ou);
