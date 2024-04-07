@@ -22,7 +22,7 @@ class SdtDoor{
     Point<T, D> last_data;
     in >> val;
     x->Src_.push_back(tim);
-    y->Src_.push_back(val * 1000000);
+    y->Src_.push_back(val);
     while(in >> val) {
       tim += t_interval_;
       T x_delta = tim - x->Src_.back();

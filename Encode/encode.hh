@@ -23,17 +23,9 @@ void Encode(EncodeForm<T> &data, bool IncreaseFlag) {
     DeltaOfDeltaEncode(data.Src_, data.Delta_);
     ZigZagEncode(data.Delta_);
   }
-  //VectorClear(data->Src_);
+  
   RunLengthEncode(data.Delta_, data.RleArrayNum_, data.RleArrayVal_);
 
- // VectorClear(data->Delta_);
-  /*
-  auto ApartCompress = [&data]()->void{
-    Simple8bEncode(data->RleArrayNum_, data->RetNum_);
-    Simple8bEncode(data->RleArrayVal_, data->RetVal_);
-  };
-  ApartCompress();
-  */
 }
 
 #endif // ENCODE

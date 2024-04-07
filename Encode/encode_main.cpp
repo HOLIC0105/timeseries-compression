@@ -56,10 +56,20 @@ int main(int argc, char * argv[]) {
 
   std::vector<uint32_t> ans;
   std::vector<bool> ret;
-  for(auto &u : tim.RleArrayNum_) ans.push_back(u);
-  for(auto &u : tim.RleArrayVal_) ans.push_back(u);
-  for(auto &u : val.RleArrayNum_) ans.push_back(u);
-  for(auto &u : val.RleArrayVal_) ans.push_back(u);
+  ret.push_back(tim.RleArrayNum_.size() * 1.5 < num);
+  ret.push_back(val.RleArrayNum_.size() * 1.5 < num);
+  if(ret[0]) {
+    for(auto &u : tim.RleArrayNum_) ans.push_back(u);
+    for(auto &u : tim.RleArrayVal_) ans.push_back(u);
+  } else {
+    for(auto &u : tim.Delta_) ans.push_back(u);
+  }
+  if(ret[1]){
+    for(auto &u : val.RleArrayNum_) ans.push_back(u);
+    for(auto &u : val.RleArrayVal_) ans.push_back(u);
+  } else {
+    for(auto &u : val.Delta_) ans.push_back(u);
+  }
 
   Simple8bEncode(ans, ret);
 

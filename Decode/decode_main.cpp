@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <unistd.h>
 
 #include <getopt.h>
 
@@ -36,47 +37,66 @@ int main(int argc, char * argv[]) {
 
   char s;
   int length;
-
+  bool flag1 = 0, flag2 = 0;
   std::vector<bool> src;
 
   in.read((char *)(&length), sizeof(length));
-
-  while(in.read(&s, sizeof(s))) {
-    for(int i = 7; i >= 0; i --) {
+  if(in.read(&s, sizeof(s))) {
+    flag1 = (s >> 7) & 1;
+    flag2 = (s >> 6) & 1;
+    for(int i = 5; i >= 0; i --)
       src.push_back((s >> i) & 1);
+    while(in.read(&s, sizeof(s))) {
+      for(int i = 7; i >= 0; i --) {
+        src.push_back((s >> i) & 1);
+      }
     }
   }
-  
   in.close();
   
   std::vector<uint32_t> dst;
 
   Simple8bDecode(src, dst);
-
   DecodeForm<timetype> tim;
   DecodeForm<datatype> val;
 
   int l = 0, r = dst.size(), sum = 0, num = 0;
+  if(flag1) {
+    while(sum != length) {
+      tim.RleArrayNum_.push_back(dst[l]);
+      sum += dst[l];
+      num ++, l ++;
+    }
+    while(num --) {
+      tim.RleArrayVal_.push_back(dst[l ++]);
+    }
+  } else {
+    int r = l + length;
+    while(l < r) {
+      tim.Delta_.push_back(dst[l]);
+      l ++;
+    }
+  }
+  num = sum = 0;
+  if(flag2) {
+    while(sum != length) {
+      val.RleArrayNum_.push_back(dst[l]);
+      sum += dst[l];
+      num ++, l ++;
+    }
+    while(num --) {
+      val.RleArrayVal_.push_back(dst[l ++]);
+    }
+  } else {
+    int r = l + length;
+    while(l < r) {
+      val.Delta_.push_back(dst[l]);
+      l ++;
+    }
+  }
 
-  while(sum != length) {
-    tim.RleArrayNum_.push_back(dst[l]);
-    sum += dst[l];
-    num ++, l ++;
-  }
-  while(num --) {
-    tim.RleArrayVal_.push_back(dst[l ++]);
-  }
-  num = 0;
-  while(sum) {
-    val.RleArrayNum_.push_back(dst[l]);
-    sum -= dst[l];
-    num ++, l ++;
-  }
-  while(num --) {
-    val.RleArrayVal_.push_back(dst[l ++]);
-  }
-  Decode(tim, true);
-  Decode(val, false);
+  Decode(tim, true, flag1);
+  Decode(val, false, flag2);
   
   std::ofstream ou(Filenameo);
 
