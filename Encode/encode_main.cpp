@@ -56,8 +56,8 @@ int main(int argc, char * argv[]) {
 
   std::vector<uint32_t> ans;
   std::vector<bool> ret;
-  ret.push_back(tim.RleArrayNum_.size() * 1.5 < num);
-  ret.push_back(val.RleArrayNum_.size() * 1.5 < num);
+  ret.push_back(tim.RleArrayNum_.size() * 1.8 < num);
+  ret.push_back(val.RleArrayNum_.size() * 1.8 < num);
   if(ret[0]) {
     for(auto &u : tim.RleArrayNum_) ans.push_back(u);
     for(auto &u : tim.RleArrayVal_) ans.push_back(u);
