@@ -17,8 +17,9 @@ int main(int argc, char * argv[]) {
 
   timetype t_begin = 0, t_interval = 1;
   datatype e_delta; //error band
+  int period;
   std::string Filenamei, Filenameo;
-  const char * optstring = "e:s:d:";
+  const char * optstring = "e:s:d:p:";
   int o;
   while((o = getopt(argc, argv, optstring)) != -1) {
     switch (o) {
@@ -31,6 +32,9 @@ int main(int argc, char * argv[]) {
       case 'e':
         e_delta = atoi(optarg);
         break;
+      case 'p':
+        period = atoi(optarg);
+        break;
       case '?':
         printf("invalid option -- '%s'", optarg);
         exit(0);
@@ -42,8 +46,20 @@ int main(int argc, char * argv[]) {
 
   EncodeForm<timetype> tim;
   EncodeForm<datatype> val;
-  data.Init_(in, &tim, &val); 
+  std::vector<datatype> ver;
+  double x;
+  while(in >> x) ver.push_back(x * 1000000);
+
+  for(int i = 1; i <= period; i ++) {
+    std::vector<datatype> D;
+    for(int j = i - 1; j < ver.size(); j += period) {
+      D.push_back(ver[j]);
+    }
+    data.Init_(D, &tim, &val);
+  }
+
   in.close();
+
 
   Encode(tim, true);
   Encode(val, false);
