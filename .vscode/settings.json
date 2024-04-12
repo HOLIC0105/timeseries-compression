@@ -47,6 +47,11 @@
     "streambuf": "cpp",
     "typeinfo": "cpp",
     "iostream": "cpp",
-    "cstring": "cpp"
+    "cstring": "cpp",
+    "bitset": "cpp",
+    "ranges": "cpp",
+    "span": "cpp",
+    "regex": "cpp",
+    "valarray": "cpp"
   }
 }

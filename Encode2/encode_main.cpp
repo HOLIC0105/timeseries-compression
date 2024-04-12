@@ -44,16 +44,13 @@ int main(int argc, char * argv[]) {
         break;
     }
   }
-
   SdtDoor<timetype, datatype> data(t_begin, t_interval, e_delta);
   std::ifstream in(Filenamei);
 
   EncodeForm<timetype> tim;
   EncodeForm<datatype> val;
   std::vector<datatype> ver;
-
   datatype x;
-
   while(in >> x) {
     ver.push_back(x);
   }
@@ -62,9 +59,15 @@ int main(int argc, char * argv[]) {
     std::vector<datatype> D;
     for(int j = i - 1; j < ver.size(); j += period) {
       D.push_back(ver[j]);
+    //  std::cout << ver[j] << std::endl;
     }
     data.Init_(D, &tim, &val);
   }  
+  /*
+  for(int i = 0; i < tim.Src_.size(); i ++) {
+    std::cout << tim.Src_[i] << " " << val.Src_[i] << std::endl;
+  }
+  */
 
   in.close();
   std::ofstream ou(Filenameo);
@@ -76,11 +79,24 @@ int main(int argc, char * argv[]) {
 
   std::vector<datatype> ans;
   std::vector<bool> ret;
-  
-  for(auto &u : tim.RleArrayNum_) ans.push_back(u);
-  for(auto &u : tim.RleArrayVal_) ans.push_back(u);
-  for(auto &u : val.RleArrayNum_) ans.push_back(u);
-  for(auto &u : val.RleArrayVal_) ans.push_back(u);
+
+  if(tim.RleArrayNum_.size() * 1.8 < num) {
+    for(auto &u : tim.RleArrayNum_) ans.push_back(u);
+    for(auto &u : tim.RleArrayVal_) ans.push_back(u);
+  } else {
+    for(auto &u : tim.Delta_) ans.push_back(u);
+  }
+  if(val.RleArrayNum_.size() * 1.8 < num){
+    for(auto &u : val.RleArrayNum_) ans.push_back(u);
+    for(auto &u : val.RleArrayVal_) ans.push_back(u);
+  } else {
+    for(auto &u : val.Delta_) ans.push_back(u);
+  }
+
+
+ // ret.push_back(tim.RleArrayNum_.size() * 1.8 < num);
+ // ret.push_back(val.RleArrayNum_.size() * 1.8 < num);
+
   std::vector<datatype> tmp;
   std::vector<std::pair<datatype,int>> sortarray;
   std::map<datatype,int> sum;
@@ -109,13 +125,6 @@ int main(int argc, char * argv[]) {
   for(auto &u : ans) {
     tmp.push_back(sum[u]);
   }
-  for(auto &u : tmp) ou << u << " ";
-  return 0;
-  /*
-
-
-
-
     Simple8bEncode(tmp, ret);
 
     int len = (8 - ret.size() % 8) % 8;
@@ -128,6 +137,5 @@ int main(int argc, char * argv[]) {
       a |= b;
       ou.write(&a, sizeof(a));
     }
-  */
   return 0;
 }
