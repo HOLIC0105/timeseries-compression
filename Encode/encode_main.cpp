@@ -59,7 +59,6 @@ int main(int argc, char * argv[]) {
   datatype x;
 
   while(in >> x) ver.push_back(x);
-
   SdtDoor<timetype, datatype> data(t_begin, t_interval, e_delta);
   for(int i = 1; i <= period; i ++) {
     std::vector<datatype> D;
@@ -74,7 +73,6 @@ int main(int argc, char * argv[]) {
   Encode(val, false);
 
   int num = tim.Src_.size();
-
   std::vector<datatype> ans;
   ans.push_back(num);
   ans.push_back(tim.RleArrayNum_.size() * 1.5 < num);
@@ -107,8 +105,6 @@ int main(int argc, char * argv[]) {
     ou1.write((char *)(&sortarray[i].first), sizeof(datatype));
     sum[sortarray[i].first] = i;
   }
-
   for(auto &u : ans) ou2 << sum[u] << " ";
-
   return 0;
 }

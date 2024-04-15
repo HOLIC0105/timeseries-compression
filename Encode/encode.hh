@@ -20,7 +20,6 @@ template <typename T>
 void Encode(EncodeForm<T> &data, bool IncreaseFlag) {
   if(IncreaseFlag) {
     DeltaEncode(data.Src_, data.Delta_);
-    RunLengthEncode(data.Delta_, data.RleArrayNum_, data.RleArrayVal_);
   } else {
     data.Delta_ = data.Src_;
   }

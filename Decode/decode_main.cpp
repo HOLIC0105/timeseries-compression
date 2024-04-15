@@ -65,7 +65,6 @@ int main(int argc, char * argv[]) {
   in2.close();
   DecodeForm<timetype> tim;
   DecodeForm<datatype> val;
-
   int l = 0, r = dst.size(), sum = 0, num = 0;
   if(flag1) {
     while(sum != length) {
@@ -83,6 +82,7 @@ int main(int argc, char * argv[]) {
       l ++;
     }
   }
+
   num = sum = 0;
   if(flag2) {
     while(sum != length) {
@@ -100,6 +100,7 @@ int main(int argc, char * argv[]) {
       l ++;
     }
   }
+
 
   Decode(tim, true, flag1);
   Decode(val, false, flag2);
