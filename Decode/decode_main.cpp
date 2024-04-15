@@ -1,21 +1,16 @@
 #include "decode.hh"
-
 #include <iostream>
 #include <map>
 #include <fstream>
 #include <unistd.h>
-
 #include <getopt.h>
-
 #define datatype double
 #define timetype int32_t
-
 int P = 1;
 int main(int argc, char * argv[]) {
   std::ios::sync_with_stdio(false);
   std::cin.tie(0); 
   std::cout.tie(0); 
-
   std::string Filenamei = "", Filenameo = "";
   const char * optstring = "s:d:";
   int o;
@@ -39,75 +34,52 @@ int main(int argc, char * argv[]) {
     std::ifstream in1("mapping", std::ios::binary);
     std::ifstream in2("data", std::ios::binary);
     std::ofstream ou(Filenameo, std::ios::binary);
-    int length;
-    int flag1 = 0, flag2 = 0;
-    int nums;
+    int length, nums, flag1, flag2;
+    std::vector<datatype>  hash;
     std::vector<datatype> dst;
-    std::vector<datatype> hash;
     datatype va;
     in2 >> nums;
-    char c;
     for(int i = 0; i < nums; i ++) {
       in1.read((char *)(&va), sizeof(va));
       hash.push_back(va);
     }
-    in2 >> length;
-    in2 >> flag1;
-    in2 >> flag2;
+    in2 >> length >> flag1 >> flag2;
     length = hash[length];
     flag1 = hash[flag1];
     flag2 = hash[flag2];
-    int x;
-    while(in2 >> x) dst.push_back(hash[x]);
+    while(in2 >> o) dst.push_back(hash[o]);
     in1.close();
     in2.close();
     system(s2.c_str());
     DecodeForm<timetype> tim;
     DecodeForm<datatype> val;
-
-    int l = 0, r = dst.size(), sum = 0, num = 0;
+    int l = 0, r = dst.size(), num = 0, sum = 0;
     if(flag1) {
       while(sum != length) {
         tim.RleArrayNum_.push_back(dst[l]);
-        sum += dst[l];
-        num ++, l ++;
+        sum += dst[l ++];
+        num ++;
       }
-      while(num --) {
-        tim.RleArrayVal_.push_back(dst[l ++]);
-      }
+      while(num --) tim.RleArrayVal_.push_back(dst[l ++]);
     } else {
       int r = l + length;
-      while(l < r) {
-        tim.Delta_.push_back(dst[l]);
-        l ++;
-      }
+      while(l < r) tim.Delta_.push_back(dst[l ++]);
     }
-
     num = sum = 0;
     if(flag2) {
       while(sum != length) {
         val.RleArrayNum_.push_back(dst[l]);
-        sum += dst[l];
-        num ++, l ++;
+        sum += dst[l ++];
+        num ++;
       }
-      while(num --) {
-        val.RleArrayVal_.push_back(dst[l ++]);
-      }
+      while(num --) val.RleArrayVal_.push_back(dst[l ++]);
     } else {
       int r = l + length;
-      while(l < r) {
-        val.Delta_.push_back(dst[l]);
-        l ++;
-      }
+      while(l < r) val.Delta_.push_back(dst[l ++]);
     }
-
-
     Decode(tim, true, flag1);
     Decode(val, false, flag2);
-
     SDTDecode(tim.Delta_, val.Delta_, ou);
-  } else {
-    std::cout << "NO THE FINAL FILE : " << Filenamei << std::endl;
-  }
+  } else std::cout << "NO THE FINAL FILE : " << Filenamei << std::endl;
   return 0;
 }
