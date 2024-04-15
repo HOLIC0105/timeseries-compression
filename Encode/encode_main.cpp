@@ -46,8 +46,8 @@ int main(int argc, char * argv[]) {
   }
 
   std::ifstream in(Filenamei);
-  std::ofstream ou1(Filenameo + "_mapping", std::ios::binary);
-  std::ofstream ou2(Filenameo + "_data", std::ios::binary);
+  std::ofstream ou1("mapping", std::ios::binary);
+  std::ofstream ou2("data", std::ios::binary);
 
   EncodeForm<timetype> tim;
   EncodeForm<datatype> val;
@@ -67,7 +67,6 @@ int main(int argc, char * argv[]) {
   }  
 
   in.close();
-  std::ofstream ou(Filenameo);
 
   Encode(tim, true);
   Encode(val, false);
@@ -106,5 +105,11 @@ int main(int argc, char * argv[]) {
     sum[sortarray[i].first] = i;
   }
   for(auto &u : ans) ou2 << sum[u] << " ";
+  ou1.close();
+  ou2.close();
+  std::string s1 = "zip " + Filenameo + ".final " + "mapping " + "data";
+  std::string s2 = "rm mapping data";
+  system(s1.c_str());
+  system(s2.c_str());
   return 0;
 }
