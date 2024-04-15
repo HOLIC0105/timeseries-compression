@@ -1,14 +1,13 @@
 #include "decode.hh"
 
 #include <iostream>
-#include <map>
 #include <fstream>
 #include <unistd.h>
 
 #include <getopt.h>
 
-#define datatype double
-#define timetype int32_t
+#define datatype int32_t
+#define timetype uint32_t
 
 int P = 1;
 int main(int argc, char * argv[]) {
@@ -34,35 +33,30 @@ int main(int argc, char * argv[]) {
     }
   }
 
-  std::ifstream in1(Filenamei + "_mapping", std::ios::binary);
-  std::ifstream in2(Filenamei + "_data", std::ios::binary);
-  std::ofstream ou(Filenameo, std::ios::binary);
+  std::ifstream in(Filenamei, std::ios::binary);
 
- 
+  char s;
   int length;
-  int flag1 = 0, flag2 = 0;
-  int nums;
-  std::vector<datatype> dst;
-  std::vector<datatype> hash;
-  datatype va;
-  in2 >> nums;
-  char c;
-  for(int i = 0; i < nums; i ++) {
-    in1.read((char *)(&va), sizeof(va));
-    hash.push_back(va);
+  bool flag1 = 0, flag2 = 0;
+  std::vector<bool> src;
+
+  in.read((char *)(&length), sizeof(length));
+  if(in.read(&s, sizeof(s))) {
+    flag1 = (s >> 7) & 1;
+    flag2 = (s >> 6) & 1;
+    for(int i = 5; i >= 0; i --)
+      src.push_back((s >> i) & 1);
+    while(in.read(&s, sizeof(s))) {
+      for(int i = 7; i >= 0; i --) {
+        src.push_back((s >> i) & 1);
+      }
+    }
   }
-  in2 >> length;
-  in2 >> flag1;
-  in2 >> flag2;
-  length = hash[length];
-  flag1 = hash[flag1];
-  flag2 = hash[flag2];
-  int x;
-  while(in2 >> x) {
-    dst.push_back(hash[x]);
-  }
-  in1.close();
-  in2.close();
+  in.close();
+  
+  std::vector<uint32_t> dst;
+
+  Simple8bDecode(src, dst);
   DecodeForm<timetype> tim;
   DecodeForm<datatype> val;
 
@@ -103,6 +97,8 @@ int main(int argc, char * argv[]) {
 
   Decode(tim, true, flag1);
   Decode(val, false, flag2);
+  
+  std::ofstream ou(Filenameo);
 
   SDTDecode(tim.Delta_, val.Delta_, ou);
   return 0;

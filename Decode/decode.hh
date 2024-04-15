@@ -18,12 +18,8 @@ static void VectorClear(std::vector<T> &v) {
 template <typename T>
 void Decode(DecodeForm<T> &data, bool IncreaseFlag, bool flag) {
   if(flag)RunLengthDecode(data.Delta_, data.RleArrayNum_, data.RleArrayVal_);
-  
   if(IncreaseFlag) {
     DeltaDecode(data.Delta_);
-  } else {
-    ZigZagDecode(data.Delta_);  
-    DeltaOfDeltaDecode(data.Delta_);
   }
 }
 

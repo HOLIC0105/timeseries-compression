@@ -23,9 +23,7 @@ void DeltaOfDeltaEncode(std::vector<T> &src, std::vector<T> &delta) {
   mid[0] = 0;
   for(size_t i = 1; i < src.size(); i ++) {
     mid[i] = (src[i] - src[i - 1]);
-    //std::cout << mid[i] << ",";
   }
-  //std::cout << std::endl;
   for(size_t i = 1; i < src.size(); i ++) {
     delta[i] = (mid[i] - mid[i - 1]);
   }

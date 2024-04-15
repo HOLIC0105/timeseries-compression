@@ -5,6 +5,7 @@
 #include <fstream>
 
 #define MAX_DOUBLE 1.79769e+308
+const double eps = 1e-8;
 template<typename T, typename D>
 struct Point{
   T x;
@@ -30,11 +31,11 @@ class SdtDoor{
       up_gate = now_up > up_gate ? now_up : up_gate;
       now_down = double(y_delta + e_delta_) / x_delta;
       down_gate = now_down < down_gate ? now_down : down_gate;
-      if(up_gate > down_gate) {
+      if(up_gate > down_gate + eps) {
         x->Src_.push_back(last_data.x);
         y->Src_.push_back(last_data.y);
         x_delta = tim - x->Src_.back();
-        y_delta = *val - x->Src_.back();
+        y_delta = *val - y->Src_.back();
         up_gate = double(y_delta - e_delta_) / x_delta;
         down_gate = double(y_delta + e_delta_) / x_delta;
       }

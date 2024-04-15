@@ -3,6 +3,7 @@
 
 #include "decode_form.hh"
 #include <fstream>
+#include <iomanip>
 
 template<typename T, typename D>
 void SDTDecode(std::vector<T> &tim, std::vector<D> &val, std::ofstream &ou) {
@@ -11,10 +12,10 @@ void SDTDecode(std::vector<T> &tim, std::vector<D> &val, std::ofstream &ou) {
     T x_delta = tim[i + 1] - tim[i];
     double Y = 0;
     for(T j = tim[i]; j < tim[i + 1]; j ++) {
-      ou << 1.0 * D(val[i] + Y / x_delta) / 1000000 << "\n";
+      ou << std::setprecision(8) << D(val[i] + Y / x_delta) << "\n";
       Y += y_delta;
     }
   }
-  ou << 1.0 * val.back() / 1000000 << "\n";
+  ou << std::setprecision(8) << val.back()<< "\n";
 }
 #endif //SDTDOOR

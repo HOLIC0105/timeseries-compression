@@ -10,6 +10,17 @@
 #define timetype uint32_t
 
 int P = 1;
+
+#define 
+
+static void * extendHeap(int num) {
+
+    int siz = (num & 1 ? num + 1 : num) * 
+
+   // void * hp = mem_sbrk()
+}
+
+
 int main(int argc, char * argv[]) {
   std::ios::sync_with_stdio(false);
   std::cin.tie(0); 

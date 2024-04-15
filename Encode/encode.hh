@@ -7,6 +7,7 @@
 #include "sdtdoor_encode.hh"
 #include "encode_form.hh"
 #include <iostream>
+#include <iomanip>
 #include <vector>
 
 template <typename T>
@@ -19,13 +20,11 @@ template <typename T>
 void Encode(EncodeForm<T> &data, bool IncreaseFlag) {
   if(IncreaseFlag) {
     DeltaEncode(data.Src_, data.Delta_);
+    RunLengthEncode(data.Delta_, data.RleArrayNum_, data.RleArrayVal_);
   } else {
-    DeltaOfDeltaEncode(data.Src_, data.Delta_);
-    //ZigZagEncode(data.Delta_);
+    data.Delta_ = data.Src_;
   }
-  
-  RunLengthEncode(data.Delta_, data.RleArrayNum_, data.RleArrayVal_);
-
+   RunLengthEncode(data.Delta_, data.RleArrayNum_, data.RleArrayVal_);
 }
 
 #endif // ENCODE
