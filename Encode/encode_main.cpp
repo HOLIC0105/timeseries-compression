@@ -12,10 +12,10 @@ int main(int argc, char * argv[]) {
   std::cin.tie(0); 
   std::cout.tie(0); 
   timetype t_begin = 0, t_interval = 1;
-  datatype e_delta; 
-  int period, o;
+  double e_delta; 
+  int period = 1, absolute, o;
   std::string Filenamei, Filenameo;
-  const char * optstring = "e:s:d:p:";
+  const char * optstring = "e:s:d:p:a:";
   while((o = getopt(argc, argv, optstring)) != -1) {
     switch (o) {
       case 's':
@@ -29,6 +29,9 @@ int main(int argc, char * argv[]) {
         break;
       case 'p':
         period = atoi(optarg);
+        break;
+      case 'a':
+        absolute = atoi(optarg);
         break;
       case '?':
         printf("invalid option -- '%s'", optarg);
@@ -47,7 +50,7 @@ int main(int argc, char * argv[]) {
   std::map<datatype,int> sum;
   datatype x;
   while(in >> x) ver.push_back(x);
-  SdtDoor<timetype, datatype> data(t_begin, t_interval, e_delta);
+  SdtDoor<timetype, datatype> data(t_begin, t_interval, e_delta, absolute);
   for(int i = 1; i <= period; i ++) {
     std::vector<datatype> D;
     for(int j = i - 1; j < ver.size(); j += period) 
