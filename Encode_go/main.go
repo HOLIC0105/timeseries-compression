@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"sort"
+	"strconv"
 )
 
 const MAX_FLOAT32 = 3.4028231e38
@@ -71,7 +72,7 @@ func Sdtdoor(in *[]float32, x *[]int32, y *[]float32) {
 	var up_gate float32 = -MAX_FLOAT32
 	var down_gate float32 = MAX_FLOAT32
 	var end int32 = int32(len(*in))
-	var tim int32 = 1
+	var tim int32 = 0
 	*x = append(*x, tim)
 	*y = append(*y, (*in)[tim])
 	tim++
@@ -131,30 +132,56 @@ func EncodeData(data *EncodeData_t) {
 	data.relval = append(data.relval, lst)
 }
 
-func main() {
-	f, err := os.Open("a.txt")
+func read(filename *string) string {
+	f, err := os.Open(*filename)
 	if err != nil {
 		fmt.Println("read file fail", err)
+		return ""
 	}
 	defer f.Close()
-
 	fd, err := ioutil.ReadAll(f)
 	if err != nil {
 		fmt.Println("read to fd fail", err)
+		return ""
 	}
-	fmt.Print(string(fd))
-	var x, y int
-	a, b := fmt.Sscanf(string(fd), "%d %d", &x, &y)
-	fmt.Println(a, b, x, y)
-	a, b = fmt.Sscanf(string(fd), "%d", &x)
-	fmt.Println(a, b, x)
-	a, b = fmt.Sscanf(string(fd), "%d", &x)
-	fmt.Println(a, b, x)
-	return
+	return string(fd)
+}
+
+func inInit(filename *string, in *[]float32) {
+	buf := read(filename)
+	Len := len(buf)
+	var s string
+	for i := 0; i < Len; i++ {
+		if buf[i] == ' ' {
+			f, _ := strconv.ParseFloat(s, 32)
+			*in = append(*in, float32(f))
+			s = ""
+		} else {
+			s += string(buf[i])
+		}
+	}
+	f, _ := strconv.ParseFloat(s, 32)
+	*in = append(*in, float32(f))
+}
+
+func main() {
+	var filename string
 	var in []float32
+	fmt.Scanf("%s", &filename)
+	inInit(&filename, &in)
+	for _, v := range in {
+		fmt.Println(v)
+	}
 	var time EncodeTime_t
 	var data EncodeData_t
 	Sdtdoor(&in, &time.src, &data.src)
+	for _, v := range time.src {
+		fmt.Println(v)
+	}
+	fmt.Println()
+	for _, v := range data.src {
+		fmt.Println(v)
+	}
 	EncodeTime(&time)
 	EncodeData(&data)
 	num := len(time.src)
@@ -189,7 +216,7 @@ func main() {
 		timesortarray = append(timesortarray, TimeSortArray_t{k, v})
 	}
 	sort.Sort(TimeSortArraySlince(timesortarray))
-
+	//输出时间压缩后的结果......
 	var ansdata Ansdata_t
 	datamap := make(map[float32]int32)
 	if len(data.relnum)*3 < num*2 {
@@ -219,4 +246,5 @@ func main() {
 		datasortarray = append(datasortarray, DataSortArray_t{k, v})
 	}
 	sort.Sort(DataSortArraySlince(datasortarray))
+	//输出数据压缩的结果......
 }
