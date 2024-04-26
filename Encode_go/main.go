@@ -1,6 +1,9 @@
 package main
 
 import (
+	"fmt"
+	"io/ioutil"
+	"os"
 	"sort"
 )
 
@@ -129,6 +132,25 @@ func EncodeData(data *EncodeData_t) {
 }
 
 func main() {
+	f, err := os.Open("a.txt")
+	if err != nil {
+		fmt.Println("read file fail", err)
+	}
+	defer f.Close()
+
+	fd, err := ioutil.ReadAll(f)
+	if err != nil {
+		fmt.Println("read to fd fail", err)
+	}
+	fmt.Print(string(fd))
+	var x, y int
+	a, b := fmt.Sscanf(string(fd), "%d %d", &x, &y)
+	fmt.Println(a, b, x, y)
+	a, b = fmt.Sscanf(string(fd), "%d", &x)
+	fmt.Println(a, b, x)
+	a, b = fmt.Sscanf(string(fd), "%d", &x)
+	fmt.Println(a, b, x)
+	return
 	var in []float32
 	var time EncodeTime_t
 	var data EncodeData_t
@@ -167,23 +189,34 @@ func main() {
 		timesortarray = append(timesortarray, TimeSortArray_t{k, v})
 	}
 	sort.Sort(TimeSortArraySlince(timesortarray))
+
 	var ansdata Ansdata_t
+	datamap := make(map[float32]int32)
 	if len(data.relnum)*3 < num*2 {
 		ansdata.num = append(ansdata.num, 1)
+		datamap[1]++
 	} else {
 		ansdata.num = append(ansdata.num, 0)
+		datamap[0]++
 	}
 	if ansdata.num[0] != 0 {
 		for _, v := range data.relnum {
 			ansdata.num = append(ansdata.num, v)
+			datamap[float32(v)]++
 		}
 		for _, v := range data.relval {
 			ansdata.val = append(ansdata.val, v)
+			datamap[v]++
 		}
 	} else {
 		for _, v := range data.src {
 			ansdata.val = append(ansdata.val, v)
+			datamap[v]++
 		}
 	}
-
+	datasortarray := make([]DataSortArray_t, 0, len(timemap))
+	for k, v := range datamap {
+		datasortarray = append(datasortarray, DataSortArray_t{k, v})
+	}
+	sort.Sort(DataSortArraySlince(datasortarray))
 }
