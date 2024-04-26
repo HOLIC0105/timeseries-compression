@@ -1,5 +1,9 @@
 package main
 
+import (
+	"sort"
+)
+
 const MAX_FLOAT32 = 3.4028231e38
 const eps = 1e-8
 
@@ -13,8 +17,50 @@ type EncodeTime_t struct {
 
 type EncodeData_t struct {
 	src    []float32
-	relnum []int
+	relnum []int32
 	relval []float32
+}
+
+type Anstime_t struct {
+	num []int32
+	val []int32
+}
+
+type Ansdata_t struct {
+	num []int32
+	val []float32
+}
+
+type TimeSortArray_t struct {
+	val int32
+	num int32
+}
+type TimeSortArraySlince []TimeSortArray_t
+
+func (p TimeSortArraySlince) Len() int {
+	return len(p)
+}
+func (p TimeSortArraySlince) Less(i, j int) bool {
+	return p[i].num > p[j].num
+}
+func (p TimeSortArraySlince) Swap(i, j int) {
+	p[i], p[j] = p[j], p[i]
+}
+
+type DataSortArray_t struct {
+	val float32
+	num int32
+}
+type DataSortArraySlince []DataSortArray_t
+
+func (p DataSortArraySlince) Len() int {
+	return len(p)
+}
+func (p DataSortArraySlince) Less(i, j int) bool {
+	return p[i].num > p[j].num
+}
+func (p DataSortArraySlince) Swap(i, j int) {
+	p[i], p[j] = p[j], p[i]
 }
 
 func Sdtdoor(in *[]float32, x *[]int32, y *[]float32) {
@@ -67,7 +113,8 @@ func EncodeTime(data *EncodeTime_t) {
 }
 
 func EncodeData(data *EncodeData_t) {
-	var lst, num = data.src[0], 0
+	var lst float32 = data.src[0]
+	var num int32 = 0
 	for _, u := range data.src {
 		if u == lst {
 			num++
@@ -88,5 +135,55 @@ func main() {
 	Sdtdoor(&in, &time.src, &data.src)
 	EncodeTime(&time)
 	EncodeData(&data)
+	num := len(time.src)
+	var anstime Anstime_t
+	timemap := make(map[int32]int32)
+	anstime.num = append(anstime.num, int32(num))
+	timemap[anstime.num[0]]++
+	if len(time.relnum)*3 < num*2 {
+		anstime.num = append(anstime.num, 1)
+		timemap[1]++
+	} else {
+		anstime.num = append(anstime.num, 0)
+		timemap[0]++
+	}
+	if anstime.num[1] != 0 {
+		for _, v := range time.relnum {
+			anstime.num = append(anstime.num, v)
+			timemap[v]++
+		}
+		for _, v := range time.relval {
+			anstime.val = append(anstime.val, v)
+			timemap[v]++
+		}
+	} else {
+		for _, v := range time.src {
+			anstime.val = append(anstime.val, v)
+			timemap[v]++
+		}
+	}
+	timesortarray := make([]TimeSortArray_t, 0, len(timemap))
+	for k, v := range timemap {
+		timesortarray = append(timesortarray, TimeSortArray_t{k, v})
+	}
+	sort.Sort(TimeSortArraySlince(timesortarray))
+	var ansdata Ansdata_t
+	if len(data.relnum)*3 < num*2 {
+		ansdata.num = append(ansdata.num, 1)
+	} else {
+		ansdata.num = append(ansdata.num, 0)
+	}
+	if ansdata.num[0] != 0 {
+		for _, v := range data.relnum {
+			ansdata.num = append(ansdata.num, v)
+		}
+		for _, v := range data.relval {
+			ansdata.val = append(ansdata.val, v)
+		}
+	} else {
+		for _, v := range data.src {
+			ansdata.val = append(ansdata.val, v)
+		}
+	}
 
 }
