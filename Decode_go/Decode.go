@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"compress/gzip"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -20,23 +21,17 @@ type DecodeData_t struct {
 	relval []float64
 }
 
-func read(filename *string) string {
-	f, err := os.Open(*filename)
-	if err != nil {
-		fmt.Println("read file fail", err)
-		return ""
-	}
-	defer f.Close()
-	fd, err := ioutil.ReadAll(f)
-	if err != nil {
-		fmt.Println("read to fd fail", err)
-		return ""
-	}
-	return string(fd)
+func read() string {
+	file, _ := os.Open("compressed")
+	defer file.Close()
+	gr, _ := gzip.NewReader(file)
+	defer gr.Close()
+	data, _ := ioutil.ReadAll(gr)
+	return string(data)
 }
 
-func inInit(filename *string, time *DecodeTime_t, data *DecodeData_t) {
-	buf := read(filename) + "\n"
+func inInit(time *DecodeTime_t, data *DecodeData_t) {
+	buf := read() + "\n"
 	l := 0
 	var s string
 	readint := func() int {
@@ -157,11 +152,11 @@ func SDTDecode(time *[]int, data *[]float64) {
 }
 
 func main() {
-	var filename string
+	//var filename string
 	var time DecodeTime_t
 	var data DecodeData_t
-	fmt.Scanf("%s", &filename)
-	inInit(&filename, &time, &data)
+	//fmt.Scanf("%s", &filename)
+	inInit(&time, &data)
 	DecodeTime(&time)
 	DecodeData(&data)
 	SDTDecode(&time.src, &data.src)

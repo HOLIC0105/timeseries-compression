@@ -1,7 +1,7 @@
 package main
 
 import (
-	"bufio"
+	"compress/gzip"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -207,25 +207,22 @@ func main() {
 		timesortarray = append(timesortarray, TimeSortArray_t{k, v})
 	}
 	sort.Sort(TimeSortArraySlince(timesortarray))
-	outputFile, outputError := os.OpenFile("output.dat", os.O_WRONLY|os.O_CREATE, 0666)
-	if outputError != nil {
-		fmt.Printf("An error occurred with file opening or creation\n")
-		return
-	}
-	defer outputFile.Close()
-	outputWriter := bufio.NewWriter(outputFile)
-	outputWriter.WriteString(strconv.Itoa(len(timesortarray)) + " ")
+	file, _ := os.Create("compressed")
+	defer file.Close()
+	gw := gzip.NewWriter(file)
+	defer gw.Close()
+	gw.Write([]byte(strconv.Itoa(len(timesortarray)) + " "))
 	var rank int
 	for _, v := range timesortarray {
-		outputWriter.WriteString(strconv.Itoa(int(v.val)) + " ")
+		gw.Write([]byte(strconv.Itoa(int(v.val)) + " "))
 		timemap[v.val] = int(rank)
 		rank++
 	}
 	for _, v := range anstime.num {
-		outputWriter.WriteString(strconv.Itoa(int(timemap[v])) + " ")
+		gw.Write([]byte(strconv.Itoa(int(timemap[v])) + " "))
 	}
 	for _, v := range anstime.val {
-		outputWriter.WriteString(strconv.Itoa(int(timemap[v])) + " ")
+		gw.Write([]byte(strconv.Itoa(int(timemap[v])) + " "))
 	}
 	var ansdata Ansdata_t
 	datamap := make(map[float64]int)
@@ -256,19 +253,18 @@ func main() {
 		datasortarray = append(datasortarray, DataSortArray_t{k, v})
 	}
 	sort.Sort(DataSortArraySlince(datasortarray))
-	outputWriter.WriteString(strconv.Itoa(len(datasortarray)) + " ")
+	gw.Write([]byte(strconv.Itoa(len(datasortarray)) + " "))
 	rank = 0
 	for _, v := range datasortarray {
 		s1 := strconv.FormatFloat(float64(v.val), 'f', -1, 32)
-		outputWriter.WriteString(s1 + " ")
+		gw.Write([]byte(s1 + " "))
 		datamap[v.val] = int(rank)
 		rank++
 	}
 	for _, v := range ansdata.num {
-		outputWriter.WriteString(strconv.Itoa(datamap[float64(v)]) + " ")
+		gw.Write([]byte(strconv.Itoa(datamap[float64(v)]) + " "))
 	}
 	for _, v := range ansdata.val {
-		outputWriter.WriteString(strconv.Itoa(datamap[v]) + " ")
+		gw.Write([]byte(strconv.Itoa(datamap[v]) + " "))
 	}
-	outputWriter.Flush()
 }
