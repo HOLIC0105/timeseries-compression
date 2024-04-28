@@ -9,10 +9,10 @@ import (
 	"strconv"
 )
 
-const MAX_FLOAT32 = 3.4028231e38
+const MAX_float64 = 3.4028231e38
 const eps = 1e-7
 
-var e_delta float32 //绝对误差的范围
+var e_delta float64 //绝对误差的范围
 
 type EncodeTime_t struct {
 	src    []int
@@ -21,9 +21,9 @@ type EncodeTime_t struct {
 }
 
 type EncodeData_t struct {
-	src    []float32
+	src    []float64
 	relnum []int
-	relval []float32
+	relval []float64
 }
 
 type Anstime_t struct {
@@ -33,7 +33,7 @@ type Anstime_t struct {
 
 type Ansdata_t struct {
 	num []int
-	val []float32
+	val []float64
 }
 
 type TimeSortArray_t struct {
@@ -53,7 +53,7 @@ func (p TimeSortArraySlince) Swap(i, j int) {
 }
 
 type DataSortArray_t struct {
-	val float32
+	val float64
 	num int
 }
 type DataSortArraySlince []DataSortArray_t
@@ -68,10 +68,10 @@ func (p DataSortArraySlince) Swap(i, j int) {
 	p[i], p[j] = p[j], p[i]
 }
 
-func Sdtdoor(in *[]float32, x *[]int, y *[]float32) {
+func Sdtdoor(in *[]float64, x *[]int, y *[]float64) {
 	delta := e_delta
-	var up_gate float32 = -MAX_FLOAT32
-	var down_gate float32 = MAX_FLOAT32
+	var up_gate float64 = -MAX_float64
+	var down_gate float64 = MAX_float64
 	var end int = int(len(*in))
 	var tim int = 0
 	*x = append(*x, tim)
@@ -83,8 +83,8 @@ func Sdtdoor(in *[]float32, x *[]int, y *[]float32) {
 		}
 		x_delta := tim - (*x)[len(*x)-1]
 		y_delta := (*in)[tim] - (*y)[len(*y)-1]
-		up_gate = max(up_gate, (y_delta-delta)/float32(x_delta))
-		down_gate = min(down_gate, (y_delta+delta)/float32(x_delta))
+		up_gate = max(up_gate, (y_delta-delta)/float64(x_delta))
+		down_gate = min(down_gate, (y_delta+delta)/float64(x_delta))
 		if up_gate > down_gate+eps {
 			*x = append(*x, tim-1)
 			*y = append(*y, (*in)[tim-1])
@@ -118,7 +118,7 @@ func EncodeTime(data *EncodeTime_t) {
 }
 
 func EncodeData(data *EncodeData_t) {
-	var lst float32 = data.src[0]
+	var lst float64 = data.src[0]
 	var num int = 0
 	for _, u := range data.src {
 		if u == lst {
@@ -148,26 +148,26 @@ func read(filename *string) string {
 	return string(fd)
 }
 
-func inInit(filename *string, in *[]float32) {
+func inInit(filename *string, in *[]float64) {
 	buf := read(filename)
 	Len := len(buf)
 	var s string
 	for i := 0; i < Len; i++ {
 		if buf[i] == ' ' || buf[i] == '\n' {
 			f, _ := strconv.ParseFloat(s, 32)
-			*in = append(*in, float32(f))
+			*in = append(*in, float64(f))
 			s = ""
 		} else {
 			s += string(buf[i]) //复杂度有问题
 		}
 	}
 	f, _ := strconv.ParseFloat(s, 32)
-	*in = append(*in, float32(f))
+	*in = append(*in, float64(f))
 }
 
 func main() {
 	var filename string
-	var in []float32
+	var in []float64
 	fmt.Scanf("%s", &filename)
 	inInit(&filename, &in)
 	var time EncodeTime_t
@@ -228,7 +228,7 @@ func main() {
 		outputWriter.WriteString(strconv.Itoa(int(timemap[v])) + " ")
 	}
 	var ansdata Ansdata_t
-	datamap := make(map[float32]int)
+	datamap := make(map[float64]int)
 	if len(data.relnum)*3 < num*2 {
 		ansdata.num = append(ansdata.num, 1)
 		datamap[1]++
@@ -239,7 +239,7 @@ func main() {
 	if ansdata.num[0] != 0 {
 		for _, v := range data.relnum {
 			ansdata.num = append(ansdata.num, v)
-			datamap[float32(v)]++
+			datamap[float64(v)]++
 		}
 		for _, v := range data.relval {
 			ansdata.val = append(ansdata.val, v)
@@ -265,12 +265,10 @@ func main() {
 		rank++
 	}
 	for _, v := range ansdata.num {
-		outputWriter.WriteString(strconv.Itoa(datamap[float32(v)]) + " ")
+		outputWriter.WriteString(strconv.Itoa(datamap[float64(v)]) + " ")
 	}
-
 	for _, v := range ansdata.val {
 		outputWriter.WriteString(strconv.Itoa(datamap[v]) + " ")
 	}
 	outputWriter.Flush()
-	println(len(timemap), len(datamap), len(time.src))
 }

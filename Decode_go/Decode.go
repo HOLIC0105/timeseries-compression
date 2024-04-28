@@ -15,9 +15,9 @@ type DecodeTime_t struct {
 }
 
 type DecodeData_t struct {
-	src    []float32
+	src    []float64
 	relnum []int
-	relval []float32
+	relval []float64
 }
 
 func read(filename *string) string {
@@ -49,7 +49,7 @@ func inInit(filename *string, time *DecodeTime_t, data *DecodeData_t) {
 		s = ""
 		return val
 	}
-	readfloat32 := func() float32 {
+	readfloat64 := func() float64 {
 		for buf[l] != ' ' && buf[l] != '\n' {
 			s += string(buf[l])
 			l++
@@ -57,7 +57,7 @@ func inInit(filename *string, time *DecodeTime_t, data *DecodeData_t) {
 		val, _ := strconv.ParseFloat(s, 32)
 		l++
 		s = ""
-		return float32(val)
+		return float64(val)
 	}
 	timemapnum := readint()
 	timemap := make(map[int]int)
@@ -83,9 +83,9 @@ func inInit(filename *string, time *DecodeTime_t, data *DecodeData_t) {
 		}
 	}
 	datamapnum := readint()
-	datamap := make(map[int]float32)
+	datamap := make(map[int]float64)
 	for datarank := 0; datarank < datamapnum; datarank++ {
-		datamap[datarank] = readfloat32()
+		datamap[datarank] = readfloat64()
 	}
 	flag2 := datamap[readint()]
 	if flag2 != 0 {
@@ -104,7 +104,6 @@ func inInit(filename *string, time *DecodeTime_t, data *DecodeData_t) {
 			data.src = append(data.src, datamap[readint()])
 		}
 	}
-	println(timemapnum, datamapnum, srcnum, flag1, flag2)
 }
 
 func DecodeTime(time *DecodeTime_t) {
@@ -133,7 +132,7 @@ func DecodeData(data *DecodeData_t) {
 	}
 }
 
-func SDTDecode(time *[]int, data *[]float32) {
+func SDTDecode(time *[]int, data *[]float64) {
 	outputFile, outputError := os.OpenFile("ans.txt", os.O_WRONLY|os.O_CREATE, 0666)
 	if outputError != nil {
 		fmt.Printf("An error occurred with file opening or creation\n")
@@ -145,15 +144,16 @@ func SDTDecode(time *[]int, data *[]float32) {
 	for i := 0; i < Len; i++ {
 		y_delta := (*data)[i+1] - (*data)[i]
 		x_delta := (*time)[i+1] - (*time)[i]
-		var y float32
+		var y float64
 		for j := (*time)[i]; j < (*time)[i+1]; j++ {
-			s := strconv.FormatFloat(float64((*data)[i]+y/float32(x_delta)), 'f', -1, 32)
+			s := strconv.FormatFloat(float64((*data)[i]+y/float64(x_delta)), 'f', -1, 32)
 			outputWriter.WriteString(s + "\n")
 			y += y_delta
 		}
 	}
 	s := strconv.FormatFloat(float64((*data)[Len]), 'f', -1, 32)
 	outputWriter.WriteString(s + "\n")
+	outputWriter.Flush()
 }
 
 func main() {
@@ -162,7 +162,6 @@ func main() {
 	var data DecodeData_t
 	fmt.Scanf("%s", &filename)
 	inInit(&filename, &time, &data)
-
 	DecodeTime(&time)
 	DecodeData(&data)
 	SDTDecode(&time.src, &data.src)
