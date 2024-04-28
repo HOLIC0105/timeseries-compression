@@ -15,30 +15,30 @@ const eps = 1e-7
 var e_delta float32 //绝对误差的范围
 
 type EncodeTime_t struct {
-	src    []int32
-	relnum []int32
-	relval []int32
+	src    []int
+	relnum []int
+	relval []int
 }
 
 type EncodeData_t struct {
 	src    []float32
-	relnum []int32
+	relnum []int
 	relval []float32
 }
 
 type Anstime_t struct {
-	num []int32
-	val []int32
+	num []int
+	val []int
 }
 
 type Ansdata_t struct {
-	num []int32
+	num []int
 	val []float32
 }
 
 type TimeSortArray_t struct {
-	val int32
-	num int32
+	val int
+	num int
 }
 type TimeSortArraySlince []TimeSortArray_t
 
@@ -54,7 +54,7 @@ func (p TimeSortArraySlince) Swap(i, j int) {
 
 type DataSortArray_t struct {
 	val float32
-	num int32
+	num int
 }
 type DataSortArraySlince []DataSortArray_t
 
@@ -68,12 +68,12 @@ func (p DataSortArraySlince) Swap(i, j int) {
 	p[i], p[j] = p[j], p[i]
 }
 
-func Sdtdoor(in *[]float32, x *[]int32, y *[]float32) {
+func Sdtdoor(in *[]float32, x *[]int, y *[]float32) {
 	delta := e_delta
 	var up_gate float32 = -MAX_FLOAT32
 	var down_gate float32 = MAX_FLOAT32
-	var end int32 = int32(len(*in))
-	var tim int32 = 0
+	var end int = int(len(*in))
+	var tim int = 0
 	*x = append(*x, tim)
 	*y = append(*y, (*in)[tim])
 	tim++
@@ -103,7 +103,7 @@ func EncodeTime(data *EncodeTime_t) {
 	for i := len - 1; i > 0; i-- {
 		data.src[i] = data.src[i] - data.src[i-1]
 	}
-	var lst, num int32 = data.src[0], 0
+	var lst, num int = data.src[0], 0
 	for _, u := range data.src {
 		if u == lst {
 			num++
@@ -119,7 +119,7 @@ func EncodeTime(data *EncodeTime_t) {
 
 func EncodeData(data *EncodeData_t) {
 	var lst float32 = data.src[0]
-	var num int32 = 0
+	var num int = 0
 	for _, u := range data.src {
 		if u == lst {
 			num++
@@ -150,7 +150,6 @@ func read(filename *string) string {
 
 func inInit(filename *string, in *[]float32) {
 	buf := read(filename)
-
 	Len := len(buf)
 	var s string
 	for i := 0; i < Len; i++ {
@@ -178,8 +177,8 @@ func main() {
 	EncodeData(&data)
 	num := len(time.src)
 	var anstime Anstime_t
-	timemap := make(map[int32]int32)
-	anstime.num = append(anstime.num, int32(num))
+	timemap := make(map[int]int)
+	anstime.num = append(anstime.num, int(num))
 	timemap[anstime.num[0]]++
 	if len(time.relnum)*3 < num*2 {
 		anstime.num = append(anstime.num, 1)
@@ -219,7 +218,7 @@ func main() {
 	var rank int
 	for _, v := range timesortarray {
 		outputWriter.WriteString(strconv.Itoa(int(v.val)) + " ")
-		timemap[v.val] = int32(rank)
+		timemap[v.val] = int(rank)
 		rank++
 	}
 	for _, v := range anstime.num {
@@ -228,10 +227,8 @@ func main() {
 	for _, v := range anstime.val {
 		outputWriter.WriteString(strconv.Itoa(int(timemap[v])) + " ")
 	}
-
-	//输出时间压缩后的结果......
 	var ansdata Ansdata_t
-	datamap := make(map[float32]int32)
+	datamap := make(map[float32]int)
 	if len(data.relnum)*3 < num*2 {
 		ansdata.num = append(ansdata.num, 1)
 		datamap[1]++
@@ -264,7 +261,7 @@ func main() {
 	for _, v := range datasortarray {
 		s1 := strconv.FormatFloat(float64(v.val), 'f', -1, 32)
 		outputWriter.WriteString(s1 + " ")
-		datamap[v.val] = int32(rank)
+		datamap[v.val] = int(rank)
 		rank++
 	}
 	for _, v := range ansdata.num {
@@ -274,5 +271,4 @@ func main() {
 		outputWriter.WriteString(strconv.Itoa(int(datamap[v])) + " ")
 	}
 	outputWriter.Flush()
-	//输出数据压缩的结果......
 }
