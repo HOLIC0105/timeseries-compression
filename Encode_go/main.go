@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -9,7 +10,7 @@ import (
 )
 
 const MAX_FLOAT32 = 3.4028231e38
-const eps = 1e-8
+const eps = 1e-7
 
 var e_delta float32 //绝对误差的范围
 
@@ -99,7 +100,7 @@ func Sdtdoor(in *[]float32, x *[]int32, y *[]float32) {
 
 func EncodeTime(data *EncodeTime_t) {
 	len := len(data.src)
-	for i := len; i >= 0; i-- {
+	for i := len - 1; i > 0; i-- {
 		data.src[i] = data.src[i] - data.src[i-1]
 	}
 	var lst, num int32 = data.src[0], 0
@@ -149,15 +150,16 @@ func read(filename *string) string {
 
 func inInit(filename *string, in *[]float32) {
 	buf := read(filename)
+
 	Len := len(buf)
 	var s string
 	for i := 0; i < Len; i++ {
-		if buf[i] == ' ' {
+		if buf[i] == ' ' || buf[i] == '\n' {
 			f, _ := strconv.ParseFloat(s, 32)
 			*in = append(*in, float32(f))
 			s = ""
 		} else {
-			s += string(buf[i])
+			s += string(buf[i]) //复杂度有问题
 		}
 	}
 	f, _ := strconv.ParseFloat(s, 32)
@@ -169,19 +171,9 @@ func main() {
 	var in []float32
 	fmt.Scanf("%s", &filename)
 	inInit(&filename, &in)
-	for _, v := range in {
-		fmt.Println(v)
-	}
 	var time EncodeTime_t
 	var data EncodeData_t
 	Sdtdoor(&in, &time.src, &data.src)
-	for _, v := range time.src {
-		fmt.Println(v)
-	}
-	fmt.Println()
-	for _, v := range data.src {
-		fmt.Println(v)
-	}
 	EncodeTime(&time)
 	EncodeData(&data)
 	num := len(time.src)
@@ -216,6 +208,27 @@ func main() {
 		timesortarray = append(timesortarray, TimeSortArray_t{k, v})
 	}
 	sort.Sort(TimeSortArraySlince(timesortarray))
+	outputFile, outputError := os.OpenFile("output.dat", os.O_WRONLY|os.O_CREATE, 0666)
+	if outputError != nil {
+		fmt.Printf("An error occurred with file opening or creation\n")
+		return
+	}
+	defer outputFile.Close()
+	outputWriter := bufio.NewWriter(outputFile)
+	outputWriter.WriteString(strconv.Itoa(len(timesortarray)) + " ")
+	var rank int
+	for _, v := range timesortarray {
+		outputWriter.WriteString(strconv.Itoa(int(v.val)) + " ")
+		timemap[v.val] = int32(rank)
+		rank++
+	}
+	for _, v := range anstime.num {
+		outputWriter.WriteString(strconv.Itoa(int(timemap[v])) + " ")
+	}
+	for _, v := range anstime.val {
+		outputWriter.WriteString(strconv.Itoa(int(timemap[v])) + " ")
+	}
+
 	//输出时间压缩后的结果......
 	var ansdata Ansdata_t
 	datamap := make(map[float32]int32)
@@ -246,5 +259,20 @@ func main() {
 		datasortarray = append(datasortarray, DataSortArray_t{k, v})
 	}
 	sort.Sort(DataSortArraySlince(datasortarray))
+	outputWriter.WriteString(strconv.Itoa(len(datasortarray)) + " ")
+	rank = 0
+	for _, v := range datasortarray {
+		s1 := strconv.FormatFloat(float64(v.val), 'f', -1, 32)
+		outputWriter.WriteString(s1 + " ")
+		datamap[v.val] = int32(rank)
+		rank++
+	}
+	for _, v := range ansdata.num {
+		outputWriter.WriteString(strconv.Itoa(int(datamap[float32(v)])) + " ")
+	}
+	for _, v := range ansdata.val {
+		outputWriter.WriteString(strconv.Itoa(int(datamap[v])) + " ")
+	}
+	outputWriter.Flush()
 	//输出数据压缩的结果......
 }
