@@ -251,7 +251,7 @@ func main() {
 			datamap[v]++
 		}
 	}
-	datasortarray := make([]DataSortArray_t, 0, len(timemap))
+	datasortarray := make([]DataSortArray_t, 0, len(datamap))
 	for k, v := range datamap {
 		datasortarray = append(datasortarray, DataSortArray_t{k, v})
 	}
@@ -265,10 +265,12 @@ func main() {
 		rank++
 	}
 	for _, v := range ansdata.num {
-		outputWriter.WriteString(strconv.Itoa(int(datamap[float32(v)])) + " ")
+		outputWriter.WriteString(strconv.Itoa(datamap[float32(v)]) + " ")
 	}
+
 	for _, v := range ansdata.val {
-		outputWriter.WriteString(strconv.Itoa(int(datamap[v])) + " ")
+		outputWriter.WriteString(strconv.Itoa(datamap[v]) + " ")
 	}
 	outputWriter.Flush()
+	println(len(timemap), len(datamap), len(time.src))
 }
