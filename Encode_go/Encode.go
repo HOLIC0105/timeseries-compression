@@ -7,6 +7,7 @@ import (
 	"os"
 	"sort"
 	"strconv"
+	"strings"
 )
 
 const MAX_float64 = 3.4028231e38
@@ -151,17 +152,17 @@ func read(filename *string) string {
 func inInit(filename *string, in *[]float64) {
 	buf := read(filename)
 	Len := len(buf)
-	var s string
+	var s strings.Builder
 	for i := 0; i < Len; i++ {
 		if buf[i] == ' ' || buf[i] == '\n' {
-			f, _ := strconv.ParseFloat(s, 32)
+			f, _ := strconv.ParseFloat(s.String(), 32)
 			*in = append(*in, float64(f))
-			s = ""
+			s.Reset()
 		} else {
-			s += string(buf[i]) //复杂度有问题
+			s.WriteString(string(buf[i]))
 		}
 	}
-	f, _ := strconv.ParseFloat(s, 32)
+	f, _ := strconv.ParseFloat(s.String(), 32)
 	*in = append(*in, float64(f))
 }
 

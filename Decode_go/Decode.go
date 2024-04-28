@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strconv"
+	"strings"
 )
 
 type DecodeTime_t struct {
@@ -33,25 +34,25 @@ func read() string {
 func inInit(time *DecodeTime_t, data *DecodeData_t) {
 	buf := read() + "\n"
 	l := 0
-	var s string
+	var s strings.Builder
 	readint := func() int {
 		for buf[l] != ' ' && buf[l] != '\n' {
-			s += string(buf[l])
+			s.WriteString(string(buf[l]))
 			l++
 		}
-		val, _ := strconv.Atoi(s)
+		val, _ := strconv.Atoi(s.String())
 		l++
-		s = ""
+		s.Reset()
 		return val
 	}
 	readfloat64 := func() float64 {
 		for buf[l] != ' ' && buf[l] != '\n' {
-			s += string(buf[l])
+			s.WriteString(string(buf[l]))
 			l++
 		}
-		val, _ := strconv.ParseFloat(s, 32)
+		val, _ := strconv.ParseFloat(s.String(), 32)
 		l++
-		s = ""
+		s.Reset()
 		return float64(val)
 	}
 	timemapnum := readint()
