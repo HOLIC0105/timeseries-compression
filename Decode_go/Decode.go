@@ -53,7 +53,7 @@ func inInit(time *DecodeTime_t, data *DecodeData_t) {
 		val, _ := strconv.ParseFloat(s.String(), 32)
 		l++
 		s.Reset()
-		return float64(val)
+		return val
 	}
 	timemapnum := readint()
 	timemap := make(map[int]int)
@@ -142,21 +142,19 @@ func SDTDecode(time *[]int, data *[]float64) {
 		x_delta := (*time)[i+1] - (*time)[i]
 		var y float64
 		for j := (*time)[i]; j < (*time)[i+1]; j++ {
-			s := strconv.FormatFloat(float64((*data)[i]+y/float64(x_delta)), 'f', -1, 32)
+			s := strconv.FormatFloat((*data)[i]+y/float64(x_delta), 'f', -1, 32)
 			outputWriter.WriteString(s + "\n")
 			y += y_delta
 		}
 	}
-	s := strconv.FormatFloat(float64((*data)[Len]), 'f', -1, 32)
+	s := strconv.FormatFloat((*data)[Len], 'f', -1, 32)
 	outputWriter.WriteString(s + "\n")
 	outputWriter.Flush()
 }
 
 func main() {
-	//var filename string
 	var time DecodeTime_t
 	var data DecodeData_t
-	//fmt.Scanf("%s", &filename)
 	inInit(&time, &data)
 	DecodeTime(&time)
 	DecodeData(&data)
